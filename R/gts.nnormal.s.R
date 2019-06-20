@@ -171,7 +171,7 @@
 #' }
 #'
 #' @export
-gts.normal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
+gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
                        b0=0,B0=1.0E-6, g0=0,G0 =1.0E-6, e0=.001,E0=.001,
                        beta.start=NULL, gamma.start=NULL, e.start=NULL,
                        lambda0.start=1, lambda1.start=1,n.chains=1,n.burnin=floor(n.iter/2),

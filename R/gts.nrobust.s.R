@@ -181,7 +181,7 @@
 #' }
 #'
 #' @export
-gts.robust.s<-function(formula,data,m.ind,advanced=FALSE, adv.model,
+gts.nrobust.s<-function(formula,data,m.ind,advanced=FALSE, adv.model,
                        b0=1,B0=1.0E-6, g0=0,G0=1.0E-6, e0=0.001,E0=0.001, l0=0,L0=1.0E-6,
                        v0=0,V0=100, beta.start=NULL, gamma.start=NULL, e.start=NULL,
                        lambda0.start=1, lambda1.start=1, df.start=5,
