@@ -1,0 +1,15 @@
+Package: ALMOND
+Type: Package
+Title: Bayesian Analysis of Local Average Treatment Effect (LATE) for Missing or/and Nonnormal Data (ALMOND)
+Version: 0.1.0
+Author: Dingjing Shi [aut, cre],
+  Xin Tong [ctb],
+  M. Joseph Meyer [ctb]
+Maintainer: Dingjing Shi <ds4ue@virginia.edu>
+Description: Using Bayesian robust two-stage causal models with instrumental variables to estimate the Local Average Treatment Effect and simultaneously handle the nonnormal and missing data.
+License: GPL (>= 3.0)
+Encoding: UTF-8
+LazyData: true
+Imports: R2OpenBUGS, coda, Formula
+Suggests: knitr, rmarkdown
+RoxygenNote: 6.1.1
