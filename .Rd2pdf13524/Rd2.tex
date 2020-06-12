@@ -1,0 +1,2214 @@
+\documentclass[a4paper]{book}
+\usepackage[times,inconsolata,hyper]{Rd}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc} % @SET ENCODING@
+% \usepackage{graphicx} % @USE GRAPHICX@
+\makeindex{}
+\begin{document}
+\chapter*{}
+\begin{center}
+{\textbf{\huge ALMOND}}
+\par\bigskip{\large \today}
+\end{center}
+\begin{description}
+\raggedright{}
+\inputencoding{utf8}
+\item[Type]\AsIs{Package}
+\item[Title]\AsIs{Bayesian Analysis of Late (Local Average Treatment Effect) for Missing Or/and Nonnormal Data (ALMOND)}
+\item[Version]\AsIs{0.1.0}
+\item[Author]\AsIs{Dingjing Shi [aut, cre],
+Xin Tong [ctb],
+M. Joseph Meyer [ctb]}
+\item[Maintainer]\AsIs{Dingjing Shi }\email{ds4ue@virginia.edu}\AsIs{}
+\item[Description]\AsIs{Using Bayesian robust two-stage causal models with instrumental variables to estimate the Local Average Treatment Effect and simultaneously handle the nonnormal and missing data.}
+\item[License]\AsIs{GPL (>= 3.0)}
+\item[Encoding]\AsIs{UTF-8}
+\item[LazyData]\AsIs{true}
+\item[Imports]\AsIs{R2OpenBUGS, coda, Formula}
+\item[Suggests]\AsIs{knitr, rmarkdown}
+\item[RoxygenNote]\AsIs{6.1.1}
+\end{description}
+\Rdcontents{\R{} topics documented:}
+\inputencoding{utf8}
+\HeaderA{gts.nnormal}{Apply the generalized Bayesian two-stage normal-based causal model with instrumental variables.}{gts.nnormal}
+%
+\begin{Description}\relax
+The \code{gts.nnormal} function applies the generalized Bayesian two-stage
+normal-based causal model to the categorical treatment data.
+The model best suits the normally-distributed outcome data
+that are complete or ignorably missing (i.e., missing completely at random or missing at random).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+gts.nnormal(formula, data, advanced = FALSE, adv.model, b0 = 1,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, e0 = 0.001, E0 = 0.001,
+  beta.start = NULL, gamma.start = NULL, e.start = NULL,
+  n.chains = 1, n.burnin = floor(n.iter/2), n.iter = 10000,
+  n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage generalized causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage generalized causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates).
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{beta.start}] The starting values for the first-stage generalized causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the model residual).
+The default value of NA will use the inverse of the residual variance from the
+IWLS (iteratively reweighted least square) estimate of the second-stage model.
+
+\item[\code{n.chains}] The number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 10000.
+
+\item[\code{n.thin}] The thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item Bayesian two-stage causal models are specified symbolically.
+A typical model has the form \emph{reponse \textasciitilde{} terms|instrumental\_variables},
+where response is the (numeric) response vector and terms is a series of terms
+which specifies a linear predictor (i.e., the treatment variable and the covariates) for the response.
+The first specification in the term is always the treatment variable and
+the remaining specifications are always the covariates for the response.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Generalized causal model coefficients at both stages: normal distributions.
+\item The generalized causal model residual term: normal distribution.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{References}\relax
+Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
+\emph{Bayesian data analysis}, 2nd edition. Chapman and Hall/CRC Press.
+
+Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., \& Lunn, D. (1996).
+BUGS: Bayesian inference using Gibbs sampling.
+\Rhref{http://www.mrc-bsu.cam.ac.uk/bugs}{}
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- gts.nnormal(outcome~treatment|instrument,data=simCatNormMCAR)
+
+# Run the model with the self-defined advanced feature
+
+model2 <- gts.nnormal(outcome~treatment|instrument,data=simCatNormMCAR,
+advanced=TRUE, adv.model=my.model)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+model3 <- gts.nnormal(outcome~treatment|instrument,data=simCatNormMCAR,codaPkg=TRUE)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{gts.nnormal.s}{Apply the generalized Bayesian two-stage normal-selection causal model with instrumental variables.}{gts.nnormal.s}
+%
+\begin{Description}\relax
+The \code{gts.nnormal.s} function applies the generalized Bayesian two-stage
+normal-selection causal model to the categorical treatment data.
+The model best suits the normally-distributed outcome data that are normally-distributed
+and nonignorably missing (i.e., MNAR) (e.g., dropout, attrition).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+gts.nnormal.s(formula, data, m.ind, advanced = FALSE, adv.model,
+  b0 = 0, B0 = 1e-06, g0 = 0, G0 = 1e-06, e0 = 0.001,
+  E0 = 0.001, beta.start = NULL, gamma.start = NULL,
+  e.start = NULL, lambda0.start = 1, lambda1.start = 1,
+  n.chains = 1, n.burnin = floor(n.iter/2), n.iter = 50000,
+  n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage generalized causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage generalized causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{beta.start}] The starting values for the first-stage generalized causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution on the model residual).
+The default value of NA will use the inverse of the residual variance from the
+IWLS (iteratively reweighted least square) estimate of the second-stage model.
+
+\item[\code{lambda0.start}] The starting value for the intercept of the coefficient of the added-on selection model.
+
+\item[\code{lambda1.start}] The starting value for the slope of the coefficient of the added-on selection model.
+
+\item[\code{n.chains}] The number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 50000.
+
+\item[\code{n.thin}] The thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+
+\item[\code{l0}] The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{L0}] The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
+for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{gts.nnormal}{gts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Generalized causal model coefficients at both stages: normal distributions.
+\item Added-on selection model coefficients: normal distributions.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{select.intercept}] Estimate of the intercept from the added-on selection model.
+\item[\code{select.slope}] Estimate of the slope from the added-on selection model.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{References}\relax
+Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
+\emph{Bayesian data analysis}, 2nd edition. Chapman and Hall/CRC Press.
+
+Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., \& Lunn, D. (1996).
+BUGS: Bayesian inference using Gibbs sampling.
+\Rhref{http://www.mrc-bsu.cam.ac.uk/bugs}{}
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- gts.nnormal.s(outcome~treatment|instrument,data=simCatNormMNAR,
+m.ind=simCatNormMNAR$indicator,n.iter=100000)
+
+# Run the model with the self-defined advanced feature
+my.normal.s.model<- function(){
+  for (i in 1:N){
+    logit(p[i]) <- beta0 + beta1*z[i]
+    x[i] ~ dbern(p[i])
+    muY[i] <- gamma0 + gamma1*p[i]
+    y[i] ~ dnorm(muY[i], pre.u2)
+
+    m[i] ~ dbern(q[i])
+    q[i] <- phi(lambda0 + lambda1*y[i])
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+  lambda0 ~ dnorm(0, 1.0E-6)
+  lambda1 ~ dnorm(0, 1.0E-6)
+
+  pre.u2 ~ dgamma(.001, .001)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- gamma1
+  select.intercept <- lambda0
+  select.slope <- lambda1
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- gts.nnormal.s(outcome~treatment|instrument,data=simCatNormMNAR,
+m.ind=simCatNormMNAR$indicator, advanced=TRUE, adv.model=my.normal.s.model,n.iter=100000)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+model3 <- gts.nnormal.s(outcome~treatment|instrument,data=simCatNormMNAR,
+m.ind=simCatNormMNAR$indicator,n.iter=100000,codaPkg=TRUE)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{gts.nrobust}{Apply the generalized Bayesian two-stage robust-based causal model with instrumental variables.}{gts.nrobust}
+%
+\begin{Description}\relax
+The \code{gts.nrobust} function applies the generalized Bayesian two-stage
+robust-based causal model to the categorical treatment data.
+The model best suits the outcome data that contain outliers
+and are ignorably missing (i.e., MCAR or MAR).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+gts.nrobust(formula, data, advanced = FALSE, adv.model, b0 = 1,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, e0 = 0.001, E0 = 0.001,
+  v0 = 0, V0 = 100, beta.start = NULL, gamma.start = NULL,
+  e.start = NULL, df.start = 5, n.chains = 1,
+  n.burnin = floor(n.iter/2), n.iter = 10000, n.thin = 1, DIC,
+  debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage generalized causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage generalized causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{v0}] The lower boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{V0}] The upper boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{beta.start}] The starting values for the first-stage generalized causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the model residual).
+The default value of NA will use the inverse of the residual variance from the
+IWLS (iteratively reweighted least square) estimate of the second-stage model.
+
+\item[\code{df.start}] The starting value for the degrees of freedom of Student's t distribution.
+
+\item[\code{n.chains}] The number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 10000.
+
+\item[\code{n.thin}] The thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{gts.nnormal}{gts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Generalized causal model coefficients at both stages: normal distributions.
+\item The generalized causal model residual: Student's t distribution.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{df.est}] Estimate of the degrees of freedom for the Student's t distribution.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{References}\relax
+Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
+\emph{Bayesian data analysis}, 2nd edition. Chapman and Hall/CRC Press.
+
+Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., \& Lunn, D. (1996).
+BUGS: Bayesian inference using Gibbs sampling.
+\Rhref{http://www.mrc-bsu.cam.ac.uk/bugs}{}
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- gts.nrobust(neighborhoodRating~voucherProgram|extraBedroom,data=simVoucher)
+
+# Run the model with the self-defined advanced feature
+my.robust.model<- function(){
+  for (i in 1:N){
+    logit(p[i]) <- beta0 + beta1*z[i]
+    x[i] ~ dbern(p[i])
+    muY[i] <- gamma0 + gamma1*p[i]
+    y[i] ~ dt(muY[i], pre.u2, df)
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+
+  pre.u2 ~ dgamma(.001, .001)
+
+  df ~ dunif(0,100)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- gamma1
+  df.est <- df
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- gts.nrobust(neighborhoodRating~voucherProgram|extraBedroom,data=simVoucher,
+advanced=TRUE, adv.model=my.robust.model)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+model3 <- gts.nrobust(neighborhoodRating~voucherProgram|extraBedroom,data=simVoucher,
+codaPkg=TRUE)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{gts.nrobust.s}{Apply the generalized Bayesian two-stage robust-selection causal model with instrumental variables.}{gts.nrobust.s}
+%
+\begin{Description}\relax
+The \code{gts.nrobust.s} function applies the generalized Bayesian two-stage
+robust-selection causal model to the categorical treatment data.
+The model best suits the outcome data that contain outliers
+and are nonignorably missing (i.e., MNAR) (e.g., dropout, attrition).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+gts.nrobust.s(formula, data, m.ind, advanced = FALSE, adv.model,
+  b0 = 1, B0 = 1e-06, g0 = 0, G0 = 1e-06, e0 = 0.001,
+  E0 = 0.001, l0 = 0, L0 = 1e-06, v0 = 0, V0 = 100,
+  beta.start = NULL, gamma.start = NULL, e.start = NULL,
+  lambda0.start = 1, lambda1.start = 1, df.start = 5, n.chains = 1,
+  n.burnin = floor(n.iter/2), n.iter = 50000, n.thin = 1, DIC,
+  debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage generalized causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage generalized causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage generalized causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residual).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{l0}] The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{L0}] The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
+for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{v0}] The lower boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{V0}] The upper boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{beta.start}] The starting values for the first-stage generalized causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage generalized causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the IWLS (iteratively reweighted least squares) estimate
+of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the model residual).
+The default value of NA will use the inverse of the residual variance from the
+IWLS (iteratively reweighted least square) estimate of the second-stage model.
+
+\item[\code{lambda0.start}] The starting value for the intercept of the coefficient of the added-on selection model.
+
+\item[\code{lambda1.start}] The starting value for the slope of the coefficient of the added-on selection model.
+
+\item[\code{df.start}] The starting value for the degrees of freedom of Student's t distribution.
+
+\item[\code{n.chains}] The number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 50000.
+
+\item[\code{n.thin}] The thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{gts.nnormal}{gts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Generalized causal model coefficients at both stages: normal distributions.
+\item The generalized causal model residual: Student's t distribution.
+\item Added-on selection model coefficients: normal distributions.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{select.intercept}] Estimate of the intercept from the added-on selection model.
+\item[\code{select.slope}] Estimate of the slope from the added-on selection model.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{df.est}] Estimate of the degrees of freedom for the Student's t distribution.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{References}\relax
+Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
+\emph{Bayesian data analysis}, 2nd edition. Chapman and Hall/CRC Press.
+
+Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., \& Lunn, D. (1996).
+BUGS: Bayesian inference using Gibbs sampling.
+\Rhref{http://www.mrc-bsu.cam.ac.uk/bugs}{}
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- gts.nrobust.s(outcome~treatment|instrument,data=simCatOutMNAR,
+m.ind=simCatOutMNAR$indicator,n.iter=100000)
+
+# Run the model with the self-defined advanced feature
+my.model <- function(){
+  for (i in 1:N){
+    logit(p[i]) <- beta0 + beta1*z[i]
+    x[i] ~ dbern(p[i])
+    muY[i] <- gamma0 + gamma1*p[i]
+    y[i] ~ dt(muY[i], pre.u2, df)
+
+    m[i] ~ dbern(q[i])
+    q[i] <- phi(lambda0 + lambda1*y[i])
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+  lambda0 ~ dnorm(0, 1.0E-6)
+  lambda1 ~ dnorm(0, 1.0E-6)
+
+  pre.u2 ~ dgamma(.001, .001)
+
+  df ~ dunif(0,50)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- LATE
+  select.intercept <- lambda0
+  select.slope <- lambda1
+  df.est <- df
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- ts.nrobust.s(outcome~treatment|instrument,m.ind=simCatOutMNAR$indicator,data=simCatOutMNAR,
+advanced=TRUE, adv.model=my.model,n.iter=100000)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+model3 <- gts.nrobust.s(outcome~treatment|instrument,data=simCatOutMNAR,
+m.ind=simCatOutMNAR$indicator,n.iter=100000, codaPkg=TRUE)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simCatNormMCAR}{A simulated dataset 1.}{simCatNormMCAR}
+\keyword{datasets}{simCatNormMCAR}
+%
+\begin{Description}\relax
+A simulated dataset with the categorical treatment variable. The outcome variable is
+normally-distributed and is missing completely at random (MCAR).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simCatNormMCAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simCatNormMCAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simCatNormMNAR}{A simulated dataset 2.}{simCatNormMNAR}
+\keyword{datasets}{simCatNormMNAR}
+%
+\begin{Description}\relax
+A simulated dataset with the categorical treatment variable. The outcome variable
+is normally-distributed and is missing not at random (MNAR, e.g., dropout or attrition).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simCatNormMNAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simCatNormMNAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simCatOutMCAR}{A simulated dataset 3.}{simCatOutMCAR}
+\keyword{datasets}{simCatOutMCAR}
+%
+\begin{Description}\relax
+A simulated dataset with the categorical treatment variables. The outcome variable contains
+outliers and is missing completely at random (MCAR).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simCatOutMCAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simCatOutMCAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simCatOutMNAR}{A simulated dataset 4.}{simCatOutMNAR}
+\keyword{datasets}{simCatOutMNAR}
+%
+\begin{Description}\relax
+A simulated dataset with the categorical treatment variable. The outcome variable contains
+outliers and is missing not at random (MNAR, e.g., dropout or attrition).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simCatOutMNAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simCatOutMNAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simNormMCAR}{A simulated dataset 5.}{simNormMCAR}
+\keyword{datasets}{simNormMCAR}
+%
+\begin{Description}\relax
+A simulated dataset with the continous treatment variable. The outcome variable is
+normally-distributed and is missing completely at random (MCAR).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simNormMCAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simNormMCAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simNormMNAR}{A simulated dataset 6.}{simNormMNAR}
+\keyword{datasets}{simNormMNAR}
+%
+\begin{Description}\relax
+A simulated dataset with the continuous treatment variable. The outcome variable
+is normally-distributed and is missing not at random (MNAR, e.g., dropout or attrition).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simNormMNAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simNormMNAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simOutMCAR}{A simulated dataset 7.}{simOutMCAR}
+\keyword{datasets}{simOutMCAR}
+%
+\begin{Description}\relax
+A simulated dataset with the continuous treatment variables. The outcome variable contains
+outliers and is missing completely at random (MCAR).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simOutMCAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simOutMCAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simOutMNAR}{A simulated dataset 8.}{simOutMNAR}
+\keyword{datasets}{simOutMNAR}
+%
+\begin{Description}\relax
+A simulated dataset with the continuous treatment variable. The outcome variable contains
+outliers and is missing not at random (MNAR, e.g., dropout or attrition).
+The dataset contains a data frame with 600 rows (participants) and 4 columns (variables).
+The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simOutMNAR)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows and 4 columns .
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item outcome. The hypothetical causal outcome variable.
+\item treatment. The hypothetical causal treatment variable.
+\item instrument. The hypothetical instrumental variable.
+\item mis.ind. Is the outcome variable value missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simOutMNAR)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{simVoucher}{Simulated data of a public voucher program.}{simVoucher}
+\keyword{datasets}{simVoucher}
+%
+\begin{Description}\relax
+The dataset is simulated from a study of the effect of a public voucher program
+(Currie and Yelowitz, 2000). The dataset contains the status of the public voucher program
+participation and other attributes. The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(simVoucher)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 1954 rows (participants) and 10 columns (variables).
+\end{Format}
+%
+\begin{References}\relax
+Currie, J., \& Yelowitz, A. (2000).
+Are public housing projects good for kids? \emph{Journal of public economics},
+\emph{75}(1), 99-124.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(simVoucher)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{subECLSK}{A subset of the ECLSK (Early Childhood Longitudinal Study – Kindergarten) cohort data.}{subECLSK}
+\keyword{datasets}{subECLSK}
+%
+\begin{Description}\relax
+The dataset contains the reading and mathematics scores and other attributes of
+600 kindergarteners. The variables are as follows.
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+data(subECLSK)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Format}
+A data frame with 600 rows (participants) and 11 columns (variables).
+\end{Format}
+%
+\begin{Details}\relax
+\begin{itemize}
+
+\item dobmm. The date of birth measured in months.
+\item gender. 1=Male; 2=Female
+\item race.
+\begin{itemize}
+
+\item 1 = White,non-Hispanic
+\item 2 = Black or African American, non-Hispanic
+\item 3 = Hispanic, race specified
+\item 4 = Hispanic, race no specified
+\item 5 = Asian
+\item 6 = Native Hawaiin, other Pacific islander
+\item 7 = American Indian or Alaska native
+\item 8 = More than one race, non-Hispanic
+
+\end{itemize}
+
+\item readingIRT. Reading IRT (Item Response Theory) scaled score.
+\item mathIRT. Mathematics IRT (Item Response Theory) scaled score.
+\item numsib. Number of siblings in household.
+\item parentedu. Parent highest education level.
+\item ses. Continuous socioeconomic status measure.
+\item relAge. The relative age of the participant entering kindergarten measured in months.
+\item PredEnt. The predicted relative kindergarten entrance age.
+\item mis.ind.read. Is the reading IRT score missing? 1=Yes, 0=No.
+\item mis.ind.math. Is the math IRT score missing? 1=Yes, 0=No.
+
+\end{itemize}
+
+\end{Details}
+%
+\begin{References}\relax
+Zhong, S. Y., \& Hoxby, C. M. (2012).
+The effects of relative age on early childhood academic achievement:
+how they differ between gender and change across time.
+(Unpublished Honors Thesis) Stanford University, Stanford, CA.
+(\Rhref{http://economics. stanford. edu/_les/StephanieYuechenZhongHonorsThesis2012.}{}
+Tourangeau, K., Nord, C., Lê, T., Sorongon, A. G., \& Najarian, M. (2009).
+Early childhood longitudinal study, kindergarten class of 1998–99 (ECLS-K),
+combined User's manual for the ECLS-K eighth-grade and K–8 full sample data files
+and electronic codebooks (NCES2009–004).
+National Center for Education Statistics, Institute of Education Sciences,
+U.S. Departmentof Education. Washington DC.
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+data(subECLSK)
+
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{ts.nnormal}{Apply the normal-based Bayesian two-stage causal model with instrumental variables.}{ts.nnormal}
+%
+\begin{Description}\relax
+The \code{ts.nnormal} function applies the normal-based Bayesian two-stage causal model
+to the continuous treatment data. The model best suits the normally-distributed outcome data
+that are complete or ignorably missing (i.e., missing completely at random or missing at random).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+ts.nnormal(formula, data, advanced = FALSE, adv.model, b0 = 1,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, u0 = 0.001, U0 = 0.001,
+  e0 = 0.001, E0 = 0.001, beta.start = NULL, gamma.start = NULL,
+  u.start = NULL, e.start = NULL, n.chains = 1,
+  n.burnin = floor(n.iter/2), n.iter = 10000, n.thin = 1, DIC,
+  debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates).
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{u0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{U0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the the variance of the
+normal distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{beta.start}] The starting values for the first-stage causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the OLS estimate of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the OLS estimate of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{u.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution of the first-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate of the first-stage model.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution of the second-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate
+of the second-stage model.
+
+\item[\code{n.chains}] Number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 10000.
+
+\item[\code{n.thin}] Thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item Bayesian two-stage causal models are specified symbolically.
+A typical model has the form \emph{reponse \textasciitilde{} terms|instrumental\_variables},
+where response is the (numeric) response vector and terms is a series of terms
+which specifies a linear predictor (i.e., the treatment variable and the covariates) for the response.
+The first specification in the term is always the treatment variable and
+the remaining specifications are always the covariates for the response.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Causal model coefficients at both stages: normal distributions.
+\item Causal model residuals at both stages: normal distributions.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{var.e.s1}] Estimate of the residual variance at the first stage.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- ts.nnormal(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,data=subECLSK)
+
+# Run the model with the self-defined advanced feature
+my.normal.model<- function(){
+for (i in 1:N){
+mu[i] <- beta0 + beta1*z[i]
+x[i] ~ dnorm(mu[i], pre.u1)
+muY[i] <- gamma0 + gamma1*mu[i]
+y[i] ~ dnorm(muY[i], pre.u2)
+}
+
+beta0 ~ dnorm(0,1)
+beta1 ~ dnorm(1, 1)
+gamma0 ~ dnorm(0, 1)
+gamma1 ~ dnorm(.5, 1)
+pre.u1 ~ dgamma(.001, .001)
+pre.u2 ~ dgamma(.001, .001)
+
+s1.intercept <- beta0
+s1.slope1 <- beta1
+s2.intercept <- gamma0
+s2.slope1 <- gamma1
+var.e.s1 <- 1/pre.u1
+var.e.s2 <- 1/pre.u2
+}
+
+model2 <- ts.nnormal(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,data=subECLSK,
+advanced=TRUE,adv.model=my.normal.model)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+ts.nnormal(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,data=subECLSK,codaPkg=TRUE)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{ts.nnormal.s}{Apply the Bayesian two-stage normal-selection causal model with instrumental variables.}{ts.nnormal.s}
+%
+\begin{Description}\relax
+The \code{ts.nnormal.s} function applies the Bayesian two-stage normal-selection causal model to the continuous treatment data.
+The model best suits the outcome data that are normally-distributed and nonignorably missing
+(i.e., MNAR) (e.g., dropout, attrition).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+ts.nnormal.s(formula, data, m.ind, advanced = FALSE, adv.model, b0 = 0,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, u0 = 0.001, U0 = 0.001,
+  e0 = 0.001, E0 = 0.001, l0 = 0, L0 = 1e-06, beta.start = NULL,
+  gamma.start = NULL, u.start = NULL, e.start = NULL,
+  lambda0.start = 1, lambda1.start = 1, n.chains = 1,
+  n.burnin = 5000, n.iter = 10000, n.thin = 1, DIC, debug = FALSE,
+  codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates).
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{u0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{U0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{l0}] The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{L0}] The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{beta.start}] The starting values for the first-stage causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the OLS estimate of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the OLS estimate of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{u.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution of the first-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate of the first-stage model.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the second-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate
+of the second-stage model.
+
+\item[\code{lambda0.start}] The starting value for the intercept of the coefficient of the added-on selection model.
+
+\item[\code{lambda1.start}] The starting value for the slope of the coefficient of the added-on selection model.
+
+\item[\code{n.chains}] Number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] Number of total iterations per chain (including burnin). The default is 50000.
+
+\item[\code{n.thin}] Thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{ts.nnormal}{ts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Causal model coefficients at both stages: normal distributions.
+\item Causal model residuals at both stages: normal distributions.
+\item Added-on selection model coefficients: normal distributions.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{select.intercept}] Estimate of the intercept from the added-on selection model.
+\item[\code{select.slope}] Estimate of the slope from the added-on selection model.
+\item[\code{var.e.s1}] Estimate of the residual variance at the first stage.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- ts.nnormal.s(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,data=subECLSK,
+m.ind=subECLSK$mis.ind.read, n.iter=100000)
+
+# Run the model with the self-defined advanced feature
+my.normal.s.model<- function(){
+  for (i in 1:N){
+    mu[i] <- beta0 + beta1*z[i]
+    x[i] ~ dnorm(mu[i], pre.u1)
+    muY[i] <- gamma0 + gamma1*mu[i]
+    y[i] ~ dnorm(muY[i], pre.u2)
+
+    m[i] ~ dbern(q[i])
+    q[i] <- phi(lambda0 + lambda1*y[i])
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+  lambda0 ~ dnorm(0, 1.0E-6)
+  lambda1 ~ dnorm(0, 1.0E-6)
+
+  pre.u1 ~ dgamma(.001, .001)
+  pre.u2 ~ dgamma(.001, .001)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- gamma1
+  select.intercept <- lambda0
+  select.slope <- lambda1
+  var.e.s1 <- 1/pre.u1
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- ts.nnormal.s(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,
+m.ind=subECLSK$mis.ind.read,data=subECLSK,advanced=TRUE, adv.model=my.normal.selection.model,
+n.iter=100000)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+ts.nnormal.s(readingIRT~relAge+gender+race+numsib+parentedu+ses|PredEnt,
+m.ind=subECLSK$mis.ind.read,data=subECLSK,codaPkg=TRUE)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{ts.nrobust}{Apply the robust-based Bayesian two-stage causal model with instrumental variables.}{ts.nrobust}
+%
+\begin{Description}\relax
+The \code{ts.nrobust} function applies the robust-based Bayesian two-stage causal model
+to the continuous treatment data. The model best suits the outcome data that contain outliers and
+are complete or ignorably missing (i.e., missing completely at random or missing at random).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+ts.nrobust(formula, data, advanced = FALSE, adv.model, b0 = 1,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, u0 = 0.001, U0 = 0.001,
+  e0 = 0.001, E0 = 0.001, v0 = 0, V0 = 100, beta.start = NULL,
+  gamma.start = NULL, u.start = NULL, e.start = NULL, df.start = 5,
+  n.chains = 1, n.burnin = floor(n.iter/2), n.iter = 10000,
+  n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates).
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{u0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{U0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{v0}] The lower boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{V0}] The upper boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{beta.start}] The starting values for the first-stage causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the OLS estimate of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the OLS estimate of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{u.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution of the first-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate of the first-stage model.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the second-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate
+of the second-stage model.
+
+\item[\code{df.start}] The starting value for the degrees of freedom of Student's t distribution.
+
+\item[\code{n.chains}] Number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] Number of total iterations per chain (including burnin). The default is 10000.
+
+\item[\code{n.thin}] Thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{ts.nnormal}{ts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Causal model coefficients at both stages: normal distributions.
+\item The causal model residual at the first stage: normal distribution;
+the causal model residual at the second stage: Student's t distribution.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{var.e.s1}] Estimate of the residual variance at the first stage.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{df.est}] Estimate of the degrees of freedom for the Student's t distribution.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- ts.nrobust(outcome~treatment|instrument,data=subECLSK)
+
+# Run the robust model with the self-defined advanced feature
+my.robust.model<- function(){
+  for (i in 1:N){
+    mu[i] <- beta0 + beta1*z[i]
+    x[i] ~ dnorm(mu[i], pre.u1)
+    muY[i] <- gamma0 + gamma1*mu[i]
+    y[i] ~ dt(muY[i], pre.u2, df)
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+
+  pre.u1 ~ dgamma(.001, .001)
+  pre.u2 ~ dgamma(.001, .001)
+
+  df ~ dunif(0,50)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- gamma1
+  df.est <- df
+  var.e.s1 <- 1/pre.u1
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- ts.nrobust(outcome~treatment|instrument,data=subECLSK,
+advanced=TRUE,adv.model=my.robust.model)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+ts.nrobust(outcome~treatment|instrument,data=subECLSK,codaPkg=TRUE)
+
+\end{ExampleCode}
+\end{Examples}
+\inputencoding{utf8}
+\HeaderA{ts.nrobust.s}{Apply the Bayesian two-stage robust-selection causal model with instrumental variables.}{ts.nrobust.s}
+%
+\begin{Description}\relax
+The \code{ts.nrobust.s} function applies the Bayesian two-stage robust-selection causal model
+to the continuous treatment data. The model best suits the outcome data that contain outliers
+and are nonignorably missing (i.e., MNAR) (e.g., dropout, attrition).
+\end{Description}
+%
+\begin{Usage}
+\begin{verbatim}
+ts.nrobust.s(formula, data, m.ind, advanced = FALSE, adv.model, b0 = 1,
+  B0 = 1e-06, g0 = 0, G0 = 1e-06, u0 = 0.001, U0 = 0.001,
+  e0 = 0.001, E0 = 0.001, v0 = 0, V0 = 100, l0 = 0, L0 = 1e-06,
+  beta.start = NULL, gamma.start = NULL, u.start = NULL,
+  e.start = NULL, df.start = 5, lambda0.start = 1,
+  lambda1.start = 1, n.chains = 1, n.burnin = floor(n.iter/2),
+  n.iter = 50000, n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
+\end{verbatim}
+\end{Usage}
+%
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{formula}] An object of class formula: a symbolic description of the model to be fitted.
+The details of the model specification are given under "Details".
+
+\item[\code{data}] A dataframe with the variables to be used in the model.
+
+\item[\code{advanced}] Logical; if FALSE (default), the model is specified using the formula argument,
+if TRUE, self-defined models can be specified using the adv.model argument.
+
+\item[\code{adv.model}] Specify the self-defined model. Used when advanced=TRUE.
+
+\item[\code{b0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the first-stage causal model coefficients, i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the mean hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{B0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the first stage causal model coefficients.
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients
+for the instrumental variables. If this takes a numerical value, then that values will
+serve as the precision hyperparameter for all of the coefficients for the instrumental variables.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{g0}] The mean hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and other regression covariates).
+This can either be a numerical value if there is only one treatment variable in the model,
+or a if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{G0}] The precision hyperparameter of the normal distribution (prior distribution)
+for the second-stage causal model coefficients.
+This can either be a numerical value if there is only one treatment variable in the model,
+or a vector if there is a treatment variable and multiple regression covariates,
+with dimensions equal to the total number of coefficients for the treatment variable and covariates.
+Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{u0}] The location hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{U0}] The shape hyperparameter of the inverse Gamma distribution (prior for the variance of the
+normal distribution on the model residuals at the first stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{e0}] The location hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{E0}] The shape hyperparameter of the inverse Gamma distribution (prior for the scale parameter
+of Student's t distribution on the model residuals at the second stage).
+Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.
+
+\item[\code{v0}] The lower boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{V0}] The upper boundary hyperparameter of the uniform distribution (prior for the degrees of freedom
+parameter of Student's t distribution).
+
+\item[\code{l0}] The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{L0}] The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 10E+6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.
+
+\item[\code{beta.start}] The starting values for the first-stage causal model coefficients,
+i.e., coefficients for the instrumental variables.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of first-stage coefficients.
+The default value of NA will use the OLS estimate of first-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the first-stage beta coefficients.
+
+\item[\code{gamma.start}] The starting values for the second-stage causal model coefficients,
+i.e., coefficients for the treatment variable and the model covariates.
+This can either be a numerical value or a column vector with dimensions
+equal to the number of second-stage coefficients.
+The default value of NA will use the OLS estimate of second-stage coefficients as the starting value.
+If this is a numerical value, that value will
+serve as the starting value mean for all the second-stage gamma coefficients.
+
+\item[\code{u.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the variance of the normal distribution of the first-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate of the first-stage model.
+
+\item[\code{e.start}] The starting value for the precision hyperparameter of the inverse gamma distribution
+(prior for the scale parameter of Student's t distribution of the second-stage residual term).
+The default value of NA will use the inverse of the residual variance from the OLS estimate
+of the second-stage model.
+
+\item[\code{df.start}] The starting value for the degrees of freedom of Student's t distribution.
+
+\item[\code{lambda0.start}] The starting value for the intercept of the coefficient of the added-on selection model.
+
+\item[\code{lambda1.start}] The starting value for the slope of the coefficient of the added-on selection model.
+
+\item[\code{n.chains}] The number of Markov chains. The default is 1.
+
+\item[\code{n.burnin}] Length of burn in, i.e., number of iterations to discard at the beginning.
+Default is n.iter/2, that is, discarding the first half of the simulations.
+
+\item[\code{n.iter}] The number of total iterations per chain (including burnin). The default is 50000.
+
+\item[\code{n.thin}] The thinning rate. Must be a positive integer. The default is 1.
+
+\item[\code{DIC}] Logical; if TRUE (default), compute deviance, pD, and DIC. The rule pD=Dbar-Dhat is used.
+
+\item[\code{codaPkg}] Logical; if FALSE (default), an object is returned; if TRUE,
+file names of the output are returned.
+\end{ldescription}
+\end{Arguments}
+%
+\begin{Details}\relax
+\begin{enumerate}
+
+\item The formula takes the form \emph{response \textasciitilde{} terms|instrumental\_variables}.
+\code{\LinkA{ts.nnormal}{ts.nnormal}} provides a detailed description of the formula rule.
+\item DIC is computed as \emph{mean(deviance)+pD}.
+\item Prior distributions used in ALMOND.
+\begin{itemize}
+
+\item Causal model coefficients at both stages: normal distributions.
+\item The causal model residual at the first stage: normal distribution;
+the causal model residual at the second stage: Student's t distribution.
+\item Added-on selection model coefficients: normal distributions.
+
+\end{itemize}
+
+
+\end{enumerate}
+
+\end{Details}
+%
+\begin{Value}
+If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of
+the saved parameters, including
+\begin{ldescription}
+\item[\code{s1.intercept}] Estimate of the intercept from the first stage.
+\item[\code{s1.slopeP}] Estimate of the pth slope from the first stage. 
+\item[\code{s2.intercept}] Estimate of the intercept from the second stage.
+\item[\code{s2.slopeP}] Estimate of the pth slope from the second stage (the first slope is always
+the \strong{LATE}).
+\item[\code{select.intercept}] Estimate of the intercept from the added-on selection model.
+\item[\code{select.slope}] Estimate of the slope from the added-on selection model.
+\item[\code{var.e.s1}] Estimate of the residual variance at the first stage.
+\item[\code{var.e.s2}] Estimate of the residual variance at the second stage.
+\item[\code{df.est}] Estimate of the degrees of freedom for the Student's t distribution.
+\item[\code{DIC}] Deviance Information Criterion.
+\end{ldescription}
+If \emph{codaPkg=TRUE}, the returned value is the path for the output file
+containing the Markov chain Monte Carlo output.
+\end{Value}
+%
+\begin{References}\relax
+Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
+\emph{Bayesian data analysis}, 2nd edition. Chapman and Hall/CRC Press.
+
+Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., \& Lunn, D. (1996).
+BUGS: Bayesian inference using Gibbs sampling.
+\Rhref{http://www.mrc-bsu.cam.ac.uk/bugs}{}
+\end{References}
+%
+\begin{Examples}
+\begin{ExampleCode}
+
+# Run the model
+model1 <- ts.nrobust.s(outcome~treatment|instrument,data=simOutMNAR,m.ind=subECLSK$mis.ind,
+n.iter=100000)
+
+# Run the model with the self-defined advanced feature
+my.robust.s.model<- function(){
+  for (i in 1:N){
+    mu[i] <- beta0 + beta1*z[i]
+    x[i] ~ dnorm(mu[i], pre.u1)
+    muY[i] <- gamma0 + gamma1*mu[i]
+    y[i] ~ dt(muY[i], pre.u2, df)
+
+    m[i] ~ dbern(q[i])
+    q[i] <- phi(lambda0 + lambda1*y[i])
+  }
+
+  beta0 ~ dnorm(0,1)
+  beta1 ~ dnorm(1, 1)
+  gamma0 ~ dnorm(0, 1)
+  gamma1 ~ dnorm(.5, 1)
+  lambda0 ~ dnorm(0, 1.0E-6)
+  lambda1 ~ dnorm(0, 1.0E-6)
+
+  pre.u1 ~ dgamma(.001, .001)
+  pre.u2 ~ dgamma(.001, .001)
+
+  df ~ dunif(0,50)
+
+  s1.intercept <- beta0
+  s1.slope1 <- beta1
+  s2.intercept <- gamma0
+  s2.slope1 <- gamma1
+  select.intercept <- lambda0
+  select.slope <- lambda1
+  df.est <- df
+  var.e.s1 <- 1/pre.u1
+  var.e.s2 <- 1/pre.u2
+}
+
+model2 <- ts.nrobust.s(routcome~treatment|instrument,data=simOutMNAR,
+m.ind=subECLSK$mis.ind, advanced=TRUE,adv.model=my.robust.s.model,n.iter=100000)
+
+# Extract the model DIC
+model1$DIC
+
+# Extract the MCMC output
+ts.nrobust.s(outcome~treatment|instrument,data=simOutMNAR,m.ind=subECLSK$mis.ind,
+codaPkg=TRUE)
+
+
+\end{ExampleCode}
+\end{Examples}
+\printindex{}
+\end{document}

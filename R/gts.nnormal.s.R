@@ -171,7 +171,7 @@
 #' }
 #'
 #' @export
-gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
+gts.normal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
                        b0=0,B0=1.0E-6, g0=0,G0 =1.0E-6, e0=.001,E0=.001,
                        beta.start=NULL, gamma.start=NULL, e.start=NULL,
                        lambda0.start=1, lambda1.start=1,n.chains=1,n.burnin=floor(n.iter/2),
@@ -189,7 +189,7 @@ gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
   x <- as.matrix(model.frame(as.Formula(formula1),data=datac,na.action=NULL,rhs=1)[,-1])
   z <- as.matrix(model.frame(as.Formula(formula1),data=datac,na.action=NULL,rhs=2)[,-1])
   N <- length(y)
-  if (length(levels(factor(x)))!=2){
+  if (length(levels(factor(x[,1])))!=2){
     stop('The factor level of the treatment variable should be 2')
   }else{
     xList <- lapply(1:ncol(x),function(i){x[,i]})
@@ -416,7 +416,7 @@ gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
                  n.chains=as.vector(n.chains),n.thin=as.vector(n.thin),
                  n.burnin=as.integer(n.burnin),n.iter=as.integer(n.iter),
                  DIC=TRUE,debug=as.logical(debug),codaPkg=as.logical(codaPkg))
-    return(output)
+    print(output,digits.summary=3)
   }
 }
 

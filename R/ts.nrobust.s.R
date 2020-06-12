@@ -457,7 +457,5 @@ ts.nrobust.s<-function(formula,data,m.ind,advanced=FALSE, adv.model,
                n.chains=as.vector(n.chains),n.thin=as.vector(n.thin),
                n.burnin=as.integer(n.burnin),n.iter=as.integer(n.iter),
                DIC=TRUE,debug=as.logical(debug),codaPkg=as.logical(codaPkg))
-  print(df.start)
-
-  return(output)
+  print(output,digits.summary=3)
 }

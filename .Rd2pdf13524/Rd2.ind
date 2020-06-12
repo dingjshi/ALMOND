@@ -1,0 +1,48 @@
+\begin{theindex}
+
+  \item $*$Topic{\relax \fontsize  {12}{14}\selectfont  \ \textbf  {datasets}}
+    \subitem \texttt  {simCatNormMCAR}, \hyperpage{16}
+    \subitem \texttt  {simCatNormMNAR}, \hyperpage{17}
+    \subitem \texttt  {simCatOutMCAR}, \hyperpage{17}
+    \subitem \texttt  {simCatOutMNAR}, \hyperpage{18}
+    \subitem \texttt  {simNormMCAR}, \hyperpage{19}
+    \subitem \texttt  {simNormMNAR}, \hyperpage{19}
+    \subitem \texttt  {simOutMCAR}, \hyperpage{20}
+    \subitem \texttt  {simOutMNAR}, \hyperpage{21}
+    \subitem \texttt  {simVoucher}, \hyperpage{21}
+    \subitem \texttt  {subECLSK}, \hyperpage{22}
+
+  \indexspace
+
+  \item \texttt  {gts.nnormal}, \hyperpage{2}, 
+		\hyperindexformat{\textit}{7}, 
+		\hyperindexformat{\textit}{10}, 
+		\hyperindexformat{\textit}{14}
+  \item \texttt  {gts.nnormal.s}, \hyperpage{5}
+  \item \texttt  {gts.nrobust}, \hyperpage{8}
+  \item \texttt  {gts.nrobust.s}, \hyperpage{12}
+
+  \indexspace
+
+  \item \texttt  {simCatNormMCAR}, \hyperpage{16}
+  \item \texttt  {simCatNormMNAR}, \hyperpage{17}
+  \item \texttt  {simCatOutMCAR}, \hyperpage{17}
+  \item \texttt  {simCatOutMNAR}, \hyperpage{18}
+  \item \texttt  {simNormMCAR}, \hyperpage{19}
+  \item \texttt  {simNormMNAR}, \hyperpage{19}
+  \item \texttt  {simOutMCAR}, \hyperpage{20}
+  \item \texttt  {simOutMNAR}, \hyperpage{21}
+  \item \texttt  {simVoucher}, \hyperpage{21}
+  \item \texttt  {subECLSK}, \hyperpage{22}
+
+  \indexspace
+
+  \item \texttt  {ts.nnormal}, \hyperpage{23}, 
+		\hyperindexformat{\textit}{29}, 
+		\hyperindexformat{\textit}{32}, 
+		\hyperindexformat{\textit}{36}
+  \item \texttt  {ts.nnormal.s}, \hyperpage{26}
+  \item \texttt  {ts.nrobust}, \hyperpage{30}
+  \item \texttt  {ts.nrobust.s}, \hyperpage{34}
+
+\end{theindex}
