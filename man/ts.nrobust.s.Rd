@@ -230,5 +230,5 @@ Gelman, A., Carlin, J.B., Stern, H.S., Rubin, D.B. (2003).
 
 Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., & Lunn, D. (1996).
 BUGS: Bayesian inference using Gibbs sampling.
-\href{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
+\href{http://www.mrc-bsu.cam.ac.uk/bugs}{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
 }

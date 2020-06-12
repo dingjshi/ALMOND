@@ -121,7 +121,7 @@
 #'
 #' Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., & Lunn, D. (1996).
 #' BUGS: Bayesian inference using Gibbs sampling.
-#' \href{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
+#' \href{http://www.mrc-bsu.cam.ac.uk/bugs}{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
 #'
 #' @examples
 #' \donttest{
@@ -171,7 +171,7 @@
 #' }
 #'
 #' @export
-gts.normal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
+gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
                        b0=0,B0=1.0E-6, g0=0,G0 =1.0E-6, e0=.001,E0=.001,
                        beta.start=NULL, gamma.start=NULL, e.start=NULL,
                        lambda0.start=1, lambda1.start=1,n.chains=1,n.burnin=floor(n.iter/2),
@@ -185,9 +185,9 @@ gts.normal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
   }
 
   formula1 <- formula(formula)
-  y <- model.response(model.frame(as.Formula(formula1),data=datac,na.action=NULL))
-  x <- as.matrix(model.frame(as.Formula(formula1),data=datac,na.action=NULL,rhs=1)[,-1])
-  z <- as.matrix(model.frame(as.Formula(formula1),data=datac,na.action=NULL,rhs=2)[,-1])
+  y <- model.response(model.frame(as.Formula(formula1),data=data,na.action=NULL))
+  x <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=1)[,-1])
+  z <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=2)[,-1])
   N <- length(y)
   if (length(levels(factor(x[,1])))!=2){
     stop('The factor level of the treatment variable should be 2')

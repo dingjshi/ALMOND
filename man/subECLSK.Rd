@@ -49,7 +49,7 @@ Zhong, S. Y., & Hoxby, C. M. (2012).
 The effects of relative age on early childhood academic achievement:
 how they differ between gender and change across time.
 (Unpublished Honors Thesis) Stanford University, Stanford, CA.
-(\href{http://economics. stanford. edu/_les/StephanieYuechenZhongHonorsThesis2012.}
+\href{http://economics. stanford. edu/_les/StephanieYuechenZhongHonorsThesis2012.}{http://economics. stanford. edu/_les/StephanieYuechenZhongHonorsThesis2012.}
 
 Tourangeau, K., Nord, C., Lê, T., Sorongon, A. G., & Najarian, M. (2009).
 Early childhood longitudinal study, kindergarten class of 1998–99 (ECLS-K),

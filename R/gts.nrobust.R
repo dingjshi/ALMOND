@@ -112,7 +112,7 @@
 #'
 #' Spiegelhalter, D. J., Thomas, A., Best, N. G., Gilks, W., & Lunn, D. (1996).
 #' BUGS: Bayesian inference using Gibbs sampling.
-#' \href{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
+#' \href{http://www.mrc-bsu.cam.ac.uk/bugs}{http://www.mrc-bsu.cam.ac.uk/bugs}, 19.
 #'
 #' @examples
 #' \donttest{
@@ -157,7 +157,7 @@
 #' }
 #'
 #' @export
-gts.robust<-function(formula,data,advanced=FALSE, adv.model,
+gts.nrobust<-function(formula,data,advanced=FALSE, adv.model,
                      b0=1,B0=1.0E-6, g0=0,G0=1.0E-6, e0=0.001,E0=0.001, v0=0,V0=100,
                      beta.start=NULL, gamma.start=NULL, e.start=NULL, df.start=5,
                      n.chains=1,n.burnin=floor(n.iter/2),n.iter=10000,n.thin=1,DIC,debug=FALSE,
