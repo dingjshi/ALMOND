@@ -10,8 +10,6 @@ Description: Using Bayesian robust two-stage causal models with instrumental var
 License: GPL (>= 3.0)
 Encoding: UTF-8
 LazyData: true
-LazyLoad: yes
-NeedsCompilation: no
 Depends: R, stats, Formula
 Imports: R2OpenBUGS, coda
 Suggests: knitr, rmarkdown
