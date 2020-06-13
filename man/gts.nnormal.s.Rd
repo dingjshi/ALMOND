@@ -6,10 +6,10 @@
 \usage{
 gts.nnormal.s(formula, data, m.ind, advanced = FALSE, adv.model,
   b0 = 0, B0 = 1e-06, g0 = 0, G0 = 1e-06, e0 = 0.001,
-  E0 = 0.001, beta.start = NULL, gamma.start = NULL,
-  e.start = NULL, lambda0.start = 1, lambda1.start = 1,
-  n.chains = 1, n.burnin = floor(n.iter/2), n.iter = 50000,
-  n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
+  E0 = 0.001, l0 = 0, L0 = 1e-06, beta.start = NULL,
+  gamma.start = NULL, e.start = NULL, lambda0.start = 1,
+  lambda1.start = 1, n.chains = 1, n.burnin = floor(n.iter/2),
+  n.iter = 50000, n.thin = 1, DIC, debug = FALSE, codaPkg = FALSE)
 }
 \arguments{
 \item{formula}{An object of class formula: a symbolic description of the model to be fitted.
@@ -63,6 +63,19 @@ Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma
 normal distribution on the model residual).
 Default of 0.001 is equivalent to the noninformative prior for the inverse Gamma distribution.}
 
+\item{l0}{The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
+for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.}
+
+\item{L0}{The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
+This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
+If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
+for the instrumental variables.
+Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
+Used when advanced=FALSE.}
+
 \item{beta.start}{The starting values for the first-stage generalized causal model coefficients,
 i.e., coefficients for the instrumental variables.
 This can either be a numerical value or a column vector with dimensions
@@ -103,19 +116,6 @@ Default is n.iter/2, that is, discarding the first half of the simulations.}
 
 \item{codaPkg}{Logical; if FALSE (default), an object is returned; if TRUE,
 file names of the output are returned.}
-
-\item{l0}{The mean hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
-This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
-If this takes a numerical value, then that values will serve as the mean hyperparameter for all of the coefficients
-for the instrumental variables. Default value of 0 is equivalent to a noninformative prior for the normal distributions.
-Used when advanced=FALSE.}
-
-\item{L0}{The precision hyperparameter of the normal distribution (prior for the added-on selection model coefficients).
-This can either be a numerical value or a vector with dimensions equal to the number of coefficients for the instrumental variables.
-If this takes a numerical value, then that values will serve as the precision hyperparameter for all of the coefficients
-for the instrumental variables.
-Default value of 1.0E-6 is equivalent to a noninformative prior for the normal distributions.
-Used when advanced=FALSE.}
 }
 \value{
 If \emph{codaPkg=FALSE}(default), returns an object containing summary statistics of

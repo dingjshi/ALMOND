@@ -173,6 +173,7 @@
 #' @export
 gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
                        b0=0,B0=1.0E-6, g0=0,G0 =1.0E-6, e0=.001,E0=.001,
+                       l0=0,L0=1.0E-6,
                        beta.start=NULL, gamma.start=NULL, e.start=NULL,
                        lambda0.start=1, lambda1.start=1,n.chains=1,n.burnin=floor(n.iter/2),
                        n.iter=50000,n.thin=1,DIC,debug=FALSE,codaPkg=FALSE){
@@ -183,7 +184,8 @@ gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
               format="E")
     return(x)
   }
-
+  require(Formula)
+  require(R2OpenBUGS)
   formula1 <- formula(formula)
   y <- model.response(model.frame(as.Formula(formula1),data=data,na.action=NULL))
   x <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=1)[,-1])

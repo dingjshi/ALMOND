@@ -204,7 +204,8 @@ ts.nrobust.s<-function(formula,data,m.ind,advanced=FALSE, adv.model,
               format="E")
     return(x)
   }
-
+  require(Formula)
+  require(R2OpenBUGS)
   formula1 <- formula(formula)
   y <- model.response(model.frame(as.Formula(formula1),data=data,na.action=NULL))
   x <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=1)[,-1])
