@@ -406,7 +406,8 @@ gts.nnormal.s<-function(formula,data,m.ind, advanced=FALSE, adv.model,
     y.int = rep(NA,N)
     y.int[which(is.na(y))] <- mean(y,na.rm=TRUE) # mean imputation
     inits<- function(){
-      c(beta.start,gamma.start,e.start,lambda0=l1,lambda1=l2,y=list(y.int))
+      c(beta.start,gamma.start,e.start,
+        lambda0=lambda0.start,lambda1=lambda1.start,y=list(y.int))
     }
 
     parameters <- tempParNamesNew
