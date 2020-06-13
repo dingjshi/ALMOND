@@ -197,8 +197,8 @@ gts.nrobust.s<-function(formula,data,m.ind,advanced=FALSE, adv.model,
 
   formula1 <- formula(formula)
   y <- model.response(model.frame(as.Formula(formula1),data=data,na.action=NULL))
-  x <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=1)[,-1])
-  z <- as.matrix(model.frame(as.Formula(formula1),data=data,na.action=NULL,rhs=2)[,-1])
+  x <- as.matrix(model.frame(Formula::as.Formula(formula1),data=data,na.action=NULL,rhs=1)[,-1])
+  z <- as.matrix(model.frame(Formula::as.Formula(formula1),data=data,na.action=NULL,rhs=2)[,-1])
   N <- length(y)
   if (length(levels(factor(x[,1])))!=2){
     stop('The factor level of the treatment variable should be 2')
